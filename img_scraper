@@ -1,0 +1,29 @@
+# This was my very first scraping script with R. Be merciful. I'm keeping it for the use of non coder friends.
+
+#
+# This was my very first scraping script with R. Be merciful. I'm keeping it for non coder friends who need it every year.
+# Scraps pictures that can be found at urls that look like this : http://url.com/foo/1.abc, url.com/foo/2.abc, etcaetera
+# It was first made to scrap pictures from a gala event
+#
+
+# libraries
+library(XML)
+library(xml2)
+library(httr)
+library(jpeg)
+
+# parameters
+nb_img = 5
+url_pre = "http://img8.weemove.com/ressources/images/evenement_photo/evenement_1171858/0/photo_1171858_"
+url_post = ".jpg" 
+format = ".jpg" # must be a file format, such as .something, for instance : .jpeg, .png
+
+setwd("~/Code_R/") # folder in which files will be downloaded
+
+# code
+for (i in 1:nb_img) {
+  response <- GET(paste0(url_pre,i,url_post))
+  img      <- content(response)
+  writeJPEG(img, target = paste0("image_",i,format))
+  rm(img)
+}
