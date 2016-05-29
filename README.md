@@ -1,2 +1,3 @@
 # useless_stuff
-This was my very first scraping script with R. Be merciful...
+
+Don't ask about these
