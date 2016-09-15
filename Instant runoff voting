@@ -1,0 +1,95 @@
+"""
+Created on Thu Sep 15 18:20:36 2016
+
+@author: Francois M
+
+Notes :
+In case you wonder, yes, this doesn't cover some corner cases such as when two (or more) candidates end up 
+having the same number of votes at the last turn resulting in both of them being pruned, and no winner. 
+(But you should note that, in a real election, that would be a perfect tie. If you run into this problem irl, 
+I wish you good luck...)
+
+It also doesn't allow voters to rank just some subset of the candidates (that wouldn't be hard to implement).
+
+And probably many more problems.
+
+But you should note this was a 20mn coding project, just to get my hands on Python for the first time, on something
+interesting and fun, not an algorithm design exercise.
+
+One last point :
+The example set of ballot (scrutin) that is produced, will, on average, give all candidates the same number of 
+rank 1 votes, rank 2 votes, etcaetera. This can be seen if you run the algorithm a couple times, the winner will
+very often win by just a tiny margin over 50%. If nbelect is small enough, ties even become very likely.
+This is highly unlikely to happen in real life, but the ballot generated wasn't meant to reproduce real life.
+Giving weight to probabilities of being voted in the first rank more often for some candidates would possible, 
+but that's harder and that's not the point, this set of ballot is generated to test the code, not to simulate an
+actual election.
+
+"""
+
+import random
+from collections import defaultdict
+
+nbelect = 200000
+candidats = ["Anne", "Boris", "Charles", "Denis", "Etienne", "Felix", "Gilles"]
+gagnant = 0
+tour = 0
+eliminated = []
+restants = []
+votecount = defaultdict(int)
+
+scrutin = {
+    "electeur": list(range(nbelect)),
+    "bulletin": [random.sample(candidats, len(candidats)) for i in range(nbelect)]
+}
+
+verbose_depouillement = 0
+verbose_result = 1
+
+# as long as there's no winner
+while(gagnant == 0):
+    tour = tour+1
+    if verbose_result == 1:
+        print("--- Tour n°" + str(tour) + " ---")
+    if tour != 1 and verbose_result == 1:
+        print("Il reste " + str(restants))
+    votecount = defaultdict(int)
+    # for each voter e
+    for e in scrutin["electeur"]:
+        # for each candidate name i, as ranked on e's ballot
+        for i in range(len(candidats)):
+            vote = scrutin["bulletin"][e][i]
+            if verbose_depouillement == 1:
+                print("electeur " + str(e) + " vote pour " + str(vote) + " en " + str(i) + "ème place")
+            # if that candidate hasn't yet been pruned from the race
+            # e's vote for that candidate is counted, and we jump to the next voter's ballot
+            # else (if that candidate has been pruned), we look at the next name on e's ballot
+            if vote not in eliminated:
+                votecount[vote] += 1
+                if verbose_depouillement == 1:
+                    print("celui ci est compté")
+                break
+
+    # sanity check
+    if sum(votecount.values()) != nbelect:
+        print("erreur : nb votes != nb electeurs")
+        break
+    
+    # once every ballot has been processed
+    for cand, nbvotes in votecount.items():
+        # we look at the number of votes for each candidate still in the race
+        if verbose_result == 1:
+            print(str(cand) + " a " + str(nbvotes) + " voix sur " + str(sum(votecount.values())) + " (" + str(nbvotes/sum(votecount.values())) + "%)")
+        # if one of them has more than 50% votes, he wins the race
+        if votecount[cand] > nbelect/2:
+            gagnant = cand
+            if verbose_result == 1:
+                print(" et a gagné")
+        # if no one has more than 50% votes, we prune the one who has the least votes, and go back to the start of the while loop
+        # to split the votes of the pruned candidates to the voters next choices 
+        else:
+            if nbvotes == min(votecount.values()):
+                eliminated.append(cand)
+                restants = [x for x in candidats if x not in eliminated]
+                if verbose_result == 1:
+                    print(" et est éliminé")
