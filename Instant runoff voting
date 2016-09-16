@@ -4,26 +4,27 @@ Created on Thu Sep 15 18:20:36 2016
 @author: Francois M
 
 Notes :
-In case you wonder, yes, this doesn't cover some corner cases such as when two (or more) candidates end up 
-having the same number of votes at the last turn resulting in both of them being pruned, and no winner. 
-(But you should note that, in a real election, that would be a perfect tie. If you run into this problem irl, 
-I wish you good luck...)
+In case you wonder, yes, this doesn't cover some corner cases and isn't really optimised for many things.
+
+For instance, it doesn't deal with when two (or more) candidates end up having the same number of votes at any given turn resulting in 
+both of them being pruned at the same time, without further analysis. (Run the code with a low nbelect and you'll see this case pop).
+This is especially a problem in the last turn, as it means no winner... It should be noted that, in a real election, due to the large 
+number of voters, this is unlikely : it would mean a perfect tie.
 
 It also doesn't allow voters to rank just some subset of the candidates (that wouldn't be hard to implement).
 
 And probably many more problems.
 
-But you should note this was a 20mn coding project, just to get my hands on Python for the first time, on something
-interesting and fun, not an algorithm design exercise.
+But you should note this was a 20mn coding project, just to get my hands on Python for the first time, on something interesting and 
+fun, not an algorithm design exercise.
 
 One last point :
-The example set of ballot (scrutin) that is produced, will, on average, give all candidates the same number of 
-rank 1 votes, rank 2 votes, etcaetera. This can be seen if you run the algorithm a couple times, the winner will
-very often win by just a tiny margin over 50%. If nbelect is small enough, ties even become very likely.
-This is highly unlikely to happen in real life, but the ballot generated wasn't meant to reproduce real life.
-Giving weight to probabilities of being voted in the first rank more often for some candidates would possible, 
-but that's harder and that's not the point, this set of ballot is generated to test the code, not to simulate an
-actual election.
+The example set of ballot (scrutin) that is produced, will, on average, give all candidates the same number of rank 1 votes, rank 2 
+votes, etcaetera. This can be seen if you run the algorithm a couple times, the winner will very often win by just a tiny margin over 
+50%. If nbelect is small enough, ties even become very likely.
+This is highly unlikely to happen in real life, but the ballot generated wasn't meant to reproduce real life. Giving weight to 
+probabilities of being voted in the first rank more often for some candidates would possible, but that's harder and that's not the 
+point, this set of ballot is generated to test the code, not to simulate an actual election.
 
 """
 
